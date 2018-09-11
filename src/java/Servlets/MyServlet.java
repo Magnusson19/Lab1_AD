@@ -1,0 +1,118 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Servlets;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author Nil
+ */
+@WebServlet(name = "MyServlet", urlPatterns = {"/MyServlet"})
+public class MyServlet extends HttpServlet {
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException, SQLException {
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+                       
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection("jdbc:sqlite:C:\\Usuarios\\Nil\\Escritorio\\exemple.db");
+          Statement statement = connection.createStatement();
+          statement.setQueryTimeout(30);  // set timeout to 30 sec.
+
+          statement.executeUpdate("drop table if exists usuarios");
+          statement.executeUpdate("drop table if exists vuelos");
+          statement.executeUpdate("drop table if exists hoteles");
+                    
+          statement.executeUpdate("create table usuarios (id_usuario string primary key, password string)");
+          statement.executeUpdate("insert into usuarios values('Silvia','12345')");
+          statement.executeUpdate("insert into usuarios values('Pepito','23456')");
+
+          statement.executeUpdate("create table vuelos (id_vuelo integer primary key, num_vuelo string,companyia string, origen string, hora_salida string, destino string, hora_llegada string)");
+          statement.executeUpdate("insert into vuelos values(1, '22', 'IBE','BCN','09:00','SVQ','10:25')");
+          statement.executeUpdate("insert into vuelos values(2, '33', 'VUE','BCN','09:00','BRU','11:25')");
+          
+          statement.executeUpdate("create table hoteles (id_hotel integer primary key, nom_hotel string, cadena string,numb_hab integer,calle string, numero integer,codigo_postal string,ciudad string,provincia string,pais string)");
+          statement.executeUpdate("insert into hoteles values(1, 'Plaza', 'Plaza',150,'Plaza Espanya',1, '08003', 'Barcelona','Barcelona','Espanya')");
+          statement.executeUpdate("insert into hoteles values(2, 'W', 'Hilton',120,'Paseo maritimo',1, '08003', 'Barcelona','Barcelona','Espanya')");
+        }  catch(SQLException e)
+        {
+          System.err.println(e.getMessage());
+        }
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(MyServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            Logger.getLogger(MyServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}
