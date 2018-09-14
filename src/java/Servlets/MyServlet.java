@@ -43,7 +43,12 @@ public class MyServlet extends HttpServlet {
                        
         Connection connection = null;
         try {
-            connection = DriverManager.getConnection("jdbc:sqlite:C:\\Usuarios\\Nil\\Escritorio\\exemple.db");
+            
+            Class.forName("org.sqlite.JDBC");   
+          java.util.Date d = new java.util.Date();
+          out.println("La fecha actual es " + d); 
+            
+            connection = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\nilmc\\Desktop\\exemple.db");
           Statement statement = connection.createStatement();
           statement.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -62,10 +67,43 @@ public class MyServlet extends HttpServlet {
           statement.executeUpdate("create table hoteles (id_hotel integer primary key, nom_hotel string, cadena string,numb_hab integer,calle string, numero integer,codigo_postal string,ciudad string,provincia string,pais string)");
           statement.executeUpdate("insert into hoteles values(1, 'Plaza', 'Plaza',150,'Plaza Espanya',1, '08003', 'Barcelona','Barcelona','Espanya')");
           statement.executeUpdate("insert into hoteles values(2, 'W', 'Hilton',120,'Paseo maritimo',1, '08003', 'Barcelona','Barcelona','Espanya')");
+          
+          ResultSet rs = statement.executeQuery("select * from usuarios");
+
+          while(rs.next())
+          {
+            // read the result set
+            out.println("<br>Id usuario = " + rs.getString("id_usuario"));
+            out.println("Password = " + rs.getString("password"));            
+          } 
+
+          rs = statement.executeQuery("select * from hoteles");
+
+          while(rs.next())
+          {
+            // read the result set
+            out.println("<br>Id hotel = " + rs.getString("id_hotel"));
+            out.println("Nombre = " + rs.getString("nom_hotel"));            
+          } 
         }  catch(SQLException e)
         {
           System.err.println(e.getMessage());
-        }
+        } catch (ClassNotFoundException e) {
+            System.err.println(e.getMessage());
+        }   
+        finally
+        {
+          try
+          {
+            if(connection != null)
+              connection.close();
+          }
+          catch(SQLException e)
+          {
+            // connection close failed.
+            System.err.println(e.getMessage());
+          }
+        } 
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
